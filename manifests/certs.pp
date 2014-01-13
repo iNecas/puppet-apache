@@ -5,7 +5,8 @@ class apache::certs (
     $deploy   = $::certs::deploy,
     $ca       = $::certs::default_ca,
     $apache_ssl_cert = '/etc/pki/tls/certs/katello-node.crt',
-    $apache_ssl_key = '/etc/pki/tls/private/katello-node.key'
+    $apache_ssl_key = '/etc/pki/tls/private/katello-node.key',
+    $apache_ca_cert = '/etc/pki/tls/certs/katello-ca.crt'
   ) {
 
   cert { "${::certs::node_fqdn}-ssl":
@@ -30,7 +31,13 @@ class apache::certs (
     pubkey { $apache_ssl_cert:
       ensure => present,
       cert => Cert["${::certs::node_fqdn}-ssl"]
-    } ~>
+    }
+
+    pubkey { $apache_ca_cert:
+      ensure => present,
+      cert => $ca
+    }
+
     privkey { $apache_ssl_key:
       ensure => present,
       cert => Cert["${::certs::node_fqdn}-ssl"]
